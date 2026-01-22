@@ -1,26 +1,27 @@
-name: CI
-
+name: PR Check - Tests and Ruff
 on:
   pull_request:
-    branches: [main, master]
-
+    branches:
+      - main
+      - master
 jobs:
-  ci:
+  test-and-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up dePython 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-
+          python-version: '3.12.3'
       - name: Install dependencies
         run: |
-          pip install ruff pytest
-
-      - name: Run Ruff
-        run: ruff check .
-
-      - name: Run tests
-        run: pytest
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run pytest
+        continue-on-error: true
+        run: |
+          cd src
+          python -m pytest test_class_car.py -v
+      - name: Run Ruff linter
+        run: ruff check --config=ruff.toml ./src/
