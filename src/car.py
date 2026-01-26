@@ -1,22 +1,26 @@
 class Car:
-    def __init__(self, model: str, fuel_capacity: float) -> None:
-        self._model = model
-        self._max_fuel_capacity: float = fuel_capacity
-        self._fuel_in_tank: float = 0
+    def __init__(self, model: str, fuel_capacity: int):
+        self.model = model
+        self.fuel_capacity = fuel_capacity
+        self.fuel_level = 0  # изначально бак пустой
+        self.odometer = 0
+        self._fuel_consumption = 10  # 10 km per liter (можно изменить)
 
-    def get_current_fuel_level(self) -> float:
-        return self._fuel_in_tank
-
-    def refuel_car(self, fuel_quantity: float):
-        if self._max_fuel_capacity - self._fuel_in_tank < fuel_quantity:
-            raise Exception("Вы пытаетесь залить слишком много бензина!")
-        self._fuel_in_tank += fuel_quantity
-
-    def drive(self, distance_km: float):
-        # Считаем, что расход 8 литров на 100 км
-        fuel_burned: int = 8 * (distance_km / 100)
-        # TODO: Вася, не забудь расскомментировать! Клиенты могут застрять!!11
-        if self._fuel_in_tank < fuel_burned:
+    def drive(self, distance: int):
+        if distance < 0:
+            raise Exception("Distance cannot be negative")
+        required_fuel = distance / self._fuel_consumption
+        if self.fuel_level < required_fuel:
             raise Exception("Не доедем жеж...")
-        self._fuel_in_tank -= fuel_burned
-        return self.get_current_fuel_level()
+        self.fuel_level -= required_fuel
+        self.odometer += distance
+
+    def refuel_car(self, amount: int):
+        if amount <= 0:
+            raise Exception("Refuel amount must be positive")
+        if self.fuel_level + amount > self.fuel_capacity:
+            raise Exception("Cannot refuel: exceeds fuel capacity")
+        self.fuel_level += amount
+
+    def get_current_fuel_level(self) -> int:
+        return self.fuel_level

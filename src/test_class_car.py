@@ -1,5 +1,5 @@
 import unittest
-from .car import Car
+from src.car import Car 
 
 class TestCase(unittest.TestCase):
     def setUp(self):
@@ -9,6 +9,7 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_drive(self):
+        self.car.refuel_car(20)
         self.car.drive(20)
         self.assertRaises(Exception, lambda: self.car.drive(80000))
 
