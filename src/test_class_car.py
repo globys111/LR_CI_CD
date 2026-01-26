@@ -1,26 +1,20 @@
-class Car:
-    def __init__(self, model: str, fuel_capacity: int):
-        self.model = model
-        self.fuel_capacity = fuel_capacity
-        self.fuel_level = 0  # изначально бак пустой
-        self.odometer = 0
-        self._fuel_consumption = 10  # 10 km per liter (можно изменить)
+import unittest
+from src.car import Car 
 
-    def drive(self, distance: int):
-        if distance < 0:
-            raise Exception("Distance cannot be negative")
-        required_fuel = distance / self._fuel_consumption
-        if self.fuel_level < required_fuel:
-            raise Exception("Не доедем жеж...")
-        self.fuel_level -= required_fuel
-        self.odometer += distance
+class TestCase(unittest.TestCase):
+    def setUp(self):
+        self.car = Car(model="BMW X5", fuel_capacity=80)
 
-    def refuel_car(self, amount: int):
-        if amount <= 0:
-            raise Exception("Refuel amount must be positive")
-        if self.fuel_level + amount > self.fuel_capacity:
-            raise Exception("Cannot refuel: exceeds fuel capacity")
-        self.fuel_level += amount
+    def tearDown(self):
+        pass
 
-    def get_current_fuel_level(self) -> int:
-        return self.fuel_level
+    def test_drive(self):
+        self.car.drive(20)
+        self.assertRaises(Exception, lambda: self.car.drive(80000))
+
+    def test_refuel(self):
+        # Заправим 20 литров
+        self.car.refuel_car(20)
+        assert self.car.get_current_fuel_level() == 20
+        # Проверим, что будет исключение, если перельем
+        self.assertRaises(Exception, lambda: self.car.refuel_car(80))
